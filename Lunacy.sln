@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lunacy", "Lunacy\Lunacy.csproj", "{02509076-B1E3-441D-BFA4-957117D3C8DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{02509076-B1E3-441D-BFA4-957117D3C8DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02509076-B1E3-441D-BFA4-957117D3C8DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02509076-B1E3-441D-BFA4-957117D3C8DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02509076-B1E3-441D-BFA4-957117D3C8DA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0F80F427-B961-4057-8CE3-F68A474ABDC2}
+	EndGlobalSection
+EndGlobal
