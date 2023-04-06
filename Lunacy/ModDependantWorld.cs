@@ -89,7 +89,7 @@ namespace Lunacy
         public static string[] WorldRoomSpawn_SplitSpawners(On.ModManager.ModMerger.WorldRoomSpawn.orig_SplitSpawners orig, WorldRoomSpawn self, string spawnString)
         {
             if (spawnString.Contains("[")) spawnString = PurgeThyEvil(spawnString);
-            Plugin.logger.LogMessage(spawnString);
+            //Plugin.logger.LogMessage(spawnString);
             return orig.Invoke(self, spawnString);
         }
 
@@ -108,7 +108,7 @@ namespace Lunacy
                     int o = s.IndexOf("[") + 1;
                     int e = s.IndexOf("]", o);
                     string modid = s.Substring(o, e - o);
-                    Plugin.logger.LogMessage($"MODIFICATIO ID: {modid}");
+                    //Plugin.logger.LogMessage($"MODIFICATIO ID: {modid}");
 
                     //Keep the spawn if mod present, alternate to another spawn if pipe symbol exists, if not then ignore the spawn
                     int pipe = s.IndexOf("|");
