@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,6 +40,20 @@
     </Reference>
     <Reference Include="HOOKS-Assembly-CSharp">
       <HintPath>..\..\..\h\HOOKS-Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil, Version=0.10.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\SteamLibrary\steamapps\common\Rain World\BepInEx\core\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod">
+      <HintPath>..\..\..\..\SteamLibrary\steamapps\common\Rain World\BepInEx\core\MonoMod.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.RuntimeDetour, Version=21.9.19.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\SteamLibrary\steamapps\common\Rain World\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.Utils">
+      <HintPath>..\..\..\..\SteamLibrary\steamapps\common\Rain World\BepInEx\core\MonoMod.Utils.dll</HintPath>
     </Reference>
     <Reference Include="netstandard" />
     <Reference Include="PUBLIC-Assembly-CSharp">
@@ -65,6 +80,7 @@
   <ItemGroup>
     <Compile Include="LightningBug.cs" />
     <Compile Include="LunacyEnums.cs" />
+    <Compile Include="ModDependantWorld.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

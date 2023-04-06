@@ -4,25 +4,30 @@ using System.Security.Permissions;
 using System.Security;
 using DevInterface;
 
+#pragma warning disable CS0618
 [module: UnverifiableCode]
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 
 namespace Lunacy
 {
-    [BepInPlugin("nacu.lunacy", "Lunacy", "1.0")]
+    [BepInPlugin("nacu.lunacy", "Lunacy", "1.1")]
     public class Plugin : BaseUnityPlugin
     {
         public static bool AppliedAlreadyDontDoItAgainPlease;
 
+        internal static BepInEx.Logging.ManualLogSource logger;
+
         public void OnEnable()
         {
+            logger = Logger;
             LunacyEnums.RegisterEnums();
             On.RainWorld.OnModsInit += OnModsInit;
         }
 
         public void OnDisable()
         {
-            LunacyEnums.UnregisterEnums();
+            //LunacyEnums.UnregisterEnums();
+            logger = null;
         }
 
         public static void OnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld raingame)
@@ -33,6 +38,7 @@ namespace Lunacy
             {
                 AppliedAlreadyDontDoItAgainPlease = true;
 
+                ModDependantWorld.Apply();
                 On.InsectCoordinator.CreateInsect += CreateCustomInsect;
                 On.InsectCoordinator.RoomEffectToInsectType += InsectCoordinator_RoomEffectToInsectType;
                 On.DevInterface.RoomSettingsPage.DevEffectGetCategoryFromEffectType += RoomSettingsPage_DevEffectGetCategoryFromEffectType;
