@@ -89,6 +89,7 @@ namespace Lunacy
         public static string[] WorldRoomSpawn_SplitSpawners(On.ModManager.ModMerger.WorldRoomSpawn.orig_SplitSpawners orig, WorldRoomSpawn self, string spawnString)
         {
             if (spawnString.Contains("[")) spawnString = PurgeThyEvil(spawnString);
+            Plugin.logger.LogMessage(spawnString);
             return orig.Invoke(self, spawnString);
         }
 
@@ -107,7 +108,7 @@ namespace Lunacy
                     int o = s.IndexOf("[") + 1;
                     int e = s.IndexOf("]", o);
                     string modid = s.Substring(o, e - o);
-                    //Plugin.logger.LogMessage($"MODIFICATIO ID: {modid}");
+                    Plugin.logger.LogMessage($"MODIFICATIO ID: {modid}");
 
                     //Keep the spawn if mod present, alternate to another spawn if pipe symbol exists, if not then ignore the spawn
                     int pipe = s.IndexOf("|");
@@ -121,14 +122,18 @@ namespace Lunacy
                         }
                     }
                     if (keep) spawns[i] = s.Substring(0, square);
-                    else if (pipe != -1)
+                    else
                     {
                         //If theres a pipe symbol just do the entire loop again so that you can nest as much mod checks as you desire and its the simplest solution lol
-                        spawns[i] = s.Substring(0, s.IndexOf("-") + 1) + s.Substring(pipe + 1);
-                        i--;
-                        continue;
+                        bool lineage = !s.Substring(1, 2).Contains("-"); //Very jank way of checking if something is lineage but how else
+                        bool smokingpipe = pipe != -1;
+                        spawns[i] = (lineage ? string.Empty : s.Substring(0, s.IndexOf("-") + 1)) + (smokingpipe ? s.Substring(pipe + 1) : ("NONE" + (lineage ? "-1.0" : string.Empty)));
+                        if (smokingpipe)
+                        {
+                            i--;
+                            continue;
+                        }
                     }
-                    else spawns[i] = string.Empty;
                 }
                 bool cant = spawns[i] == string.Empty;
                 //Reassemble
