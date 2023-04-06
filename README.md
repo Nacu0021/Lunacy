@@ -23,6 +23,7 @@ GW_C08 : 3-Leech-10[moreslugcats], 5-Snail-4
 ```
 
 The filter goes after the number of creatures and/or after any spawn data. You can also write a short "MSC" or "DP" instead of "moreslugcats".
+
 You may use the `|` symbol to set fallback spawns. If the specified mod isn't enabled, it uses the one to the right instead.  
 With this feature you can put modded creatures in your region without depending on the other mod, and losing out on a creature!
 
