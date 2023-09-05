@@ -6,10 +6,10 @@ Library of custom features for Rain World, whether that'd be creatures, cosmetic
 ## New cosmetic bugs :))
 Available inside the `InsectGroup` object in devtools, and as room effects.
 
-# Lightning bugs!
+### Lightning bugs!
 ![bugspart2electricbugaloo](https://user-images.githubusercontent.com/67332756/217871778-cb31a469-18c5-4a2c-9a56-7157bcafa57d.gif)
 
-# Funny starfish!!
+### Funny starfish!!
 ![fis](https://github.com/Nacu0021/Lunacy/assets/67332756/d6c9e865-5afc-4958-947e-b5deb286bb9d)
 
 
