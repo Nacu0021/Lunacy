@@ -56,6 +56,9 @@
       <HintPath>..\..\..\..\SteamLibrary\steamapps\common\Rain World\BepInEx\core\MonoMod.Utils.dll</HintPath>
     </Reference>
     <Reference Include="netstandard" />
+    <Reference Include="Pom">
+      <HintPath>..\..\..\..\SteamLibrary\steamapps\workshop\content\312520\2920439169\plugins\Pom.dll</HintPath>
+    </Reference>
     <Reference Include="PUBLIC-Assembly-CSharp">
       <HintPath>..\..\..\h\PUBLIC-Assembly-CSharp.dll</HintPath>
     </Reference>
@@ -78,12 +81,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LightningBug.cs" />
+    <Compile Include="Insects\InsectHooks.cs" />
+    <Compile Include="Insects\LightningBug.cs" />
     <Compile Include="LunacyEnums.cs" />
     <Compile Include="ModDependantWorld.cs" />
+    <Compile Include="PhysicalObjects\CoralSpearAbstract.cs" />
+    <Compile Include="PhysicalObjects\CoralSpear.cs" />
+    <Compile Include="PhysicalObjects\CoralSpearFisob.cs" />
+    <Compile Include="PlacedObjects\CoralSpearCoral.cs" />
+    <Compile Include="PlacedObjects\PlacesObjects.cs" />
+    <Compile Include="PlayerHooks.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Insects\Starfish.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetPath)" "D:\SteamLibrary\steamapps\common\Rain World\RainWorld_Data\StreamingAssets\mods\lunacy\plugins\$(TargetName).dll"</PostBuildEvent>

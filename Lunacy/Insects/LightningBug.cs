@@ -3,7 +3,7 @@ using RWCustom;
 using System.Linq;
 using MoreSlugcats;
 
-namespace Lunacy
+namespace Lunacy.Insects
 {
     public class LightningBug : CosmeticInsect
     {
@@ -40,6 +40,16 @@ namespace Lunacy
         public override void Update(bool eu)
         {
             lastRot = rot;
+
+            if (!this.alive)
+            {
+                if (light != null)
+                { 
+                    light.Destroy();
+                    light = null;
+                }
+                vel.y -= 0.3f;
+            }
 
             if (room.Darkness(pos) > 0f)
             {
@@ -87,8 +97,6 @@ namespace Lunacy
                     this.dir = Vector2.Lerp(this.dir, Custom.DirVec(this.pos, this.electricSpearHolder.pos + new Vector2(0f, this.electricSpearHolder.rad)), 0.33f);
                 }
             }
-            rot = Vector3.Slerp(rot, dir, 0.1f);
-            vel += rot * 1.5f;
 
             if (mySwarm != null && !room.IsPositionInsideBoundries(room.GetTilePosition(pos)))
             {
@@ -100,15 +108,15 @@ namespace Lunacy
             }
             else
             {
-                for (int i = 0; i < 4; i++)
-                {
-                    if (this.room.GetTile(this.room.GetTilePosition(this.pos) + Custom.fourDirections[i]).Solid ||
-                        this.room.GetTile(this.room.GetTilePosition(this.pos) + Custom.fourDirections[i] * 3).Solid)
-                    {
-                        var vektore = Custom.DirVec(pos, pos - Custom.fourDirections[i].ToVector2());
-                        dir = Vector2.Lerp(dir, vektore, 0.66f);
-                    }
-                }
+                //for (int i = 0; i < 4; i++)
+                //{
+                //    if (this.room.GetTile(this.room.GetTilePosition(this.pos) + Custom.fourDirections[i]).Solid ||
+                //        this.room.GetTile(this.room.GetTilePosition(this.pos) + Custom.fourDirections[i] * 3).Solid)
+                //    {
+                //        var vektore = Custom.DirVec(pos, pos - Custom.fourDirections[i].ToVector2());
+                //        dir = Vector2.Lerp(dir, vektore, 0.66f);
+                //    }
+                //}
 
                 if (Random.value < 0.008333334f && this.room.abstractRoom.creatures.Count > 0)
                 {
@@ -118,7 +126,14 @@ namespace Lunacy
                         this.electricSpearHolder = abstractCreature.realizedCreature.bodyChunks[Random.Range(0, abstractCreature.realizedCreature.bodyChunks.Length)];
                     }
                 }
+
+                if (room.GetTile(pos + (dir * 20f)).Solid || room.GetTile(pos + (dir * 60f)).Solid) dir = Vector3.Slerp(dir, -dir, 0.33f);
+
+                if (submerged) dir = Vector3.Slerp(dir, new Vector2(0, 1f), 0.1f);
             }
+
+            rot = Vector3.Slerp(rot, dir, 0.1f);
+            vel += rot * 1.5f;
 
             if (zipCounter > 0)
             {
@@ -147,7 +162,7 @@ namespace Lunacy
                             }
                             else
                             {
-                                room.AddObject(new MouseSpark(pos, Custom.RNV(), 20, RandomizeColorABit(color)));
+                                room.AddObject(new MouseSpark(pos, Custom.RNV(), 20, RandomizeColorABit(color, 0.05f, 0.1f)));
                             }
                             relevantCounter = Random.Range(3, 10);
                         }
@@ -177,6 +192,8 @@ namespace Lunacy
 
         public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
         {
+            base.InitiateSprites(sLeaser, rCam);
+
             sLeaser.sprites = new FSprite[2];
 
             sLeaser.sprites[0] = new FSprite("pixel")
@@ -196,6 +213,8 @@ namespace Lunacy
 
         public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
         {
+            base.DrawSprites(sLeaser, rCam, timeStacker, camPos);
+
             Vector2 positio = Vector2.Lerp(lastPos, pos, timeStacker);
             Vector2 rotatio = Vector2.Lerp(lastRot, rot, timeStacker);
 
@@ -203,14 +222,12 @@ namespace Lunacy
             sLeaser.sprites[0].rotation = Custom.VecToDeg(rotatio);
             sLeaser.sprites[1].SetPosition(positio - rot.normalized * 3f - camPos);
             sLeaser.sprites[1].rotation = Custom.VecToDeg(rotatio);
-
-            base.DrawSprites(sLeaser, rCam, timeStacker, camPos);
         }
 
         public override void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
         {
             base.ApplyPalette(sLeaser, rCam, palette);
-            color = RandomizeColorABit(RoomCamera.allEffectColorsTexture.GetPixel((A ? room.roomSettings.EffectColorA : room.roomSettings.EffectColorB) * 2, 0));
+            color = RandomizeColorABit(RoomCamera.allEffectColorsTexture.GetPixel((A ? room.roomSettings.EffectColorA : room.roomSettings.EffectColorB) * 2, 0), 0.0f, 0.1f);
             sLeaser.sprites[0].color = palette.blackColor;
             sLeaser.sprites[1].color = color;
             if (light != null)
@@ -219,10 +236,10 @@ namespace Lunacy
             }
         }
 
-        public static Color RandomizeColorABit(Color color)
+        public static Color RandomizeColorABit(Color color, float factor1, float factor2)
         {
             var hslcolor = Custom.RGB2HSL(color);
-            color = Custom.HSL2RGB(Custom.WrappedRandomVariation(hslcolor.x, 0.05f, 0.1f), hslcolor.y, Custom.ClampedRandomVariation(hslcolor.z, 0.05f, 0.1f));
+            color = Custom.HSL2RGB(Custom.WrappedRandomVariation(hslcolor.x, factor1, factor2), hslcolor.y, Custom.ClampedRandomVariation(hslcolor.z, factor1, factor2));
             return color;
         }
 
@@ -251,7 +268,7 @@ namespace Lunacy
                 inBetweenPoint = Mathf.Lerp(0.2f, 0.8f, Random.value);
                 deviation = Mathf.Lerp(-10f, 10f, Random.value);
                 this.width = width;
-                this.color = RandomizeColorABit(color);
+                this.color = RandomizeColorABit(color, 0.05f, 0.1f);
             }
 
             public override void Update(bool eu)
