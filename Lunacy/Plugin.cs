@@ -1,7 +1,7 @@
 ﻿using BepInEx;
 using System.Security.Permissions;
 using System.Security;
-//using Fisobs.Core;
+using Fisobs.Core;
 
 #pragma warning disable CS0618
 [module: UnverifiableCode]
@@ -10,8 +10,9 @@ using System.Security;
 namespace Lunacy
 {
     using Insects;
-    //using Lunacy.PlacedObjects;
-    //using PhysicalObjects;
+    using Creatures;
+    using Lunacy.PlacedObjects;
+    using PhysicalObjects;
 
     [BepInPlugin("nacu.lunacy", "Lunacy", "1.2")]
     public class Plugin : BaseUnityPlugin
@@ -24,8 +25,6 @@ namespace Lunacy
         {
             logger = Logger;
             LunacyEnums.RegisterEnums();
-
-            //Content.Register(new CoralSpearFisob());
 
             On.RainWorld.OnModsInit += OnModsInit;
         }
@@ -43,10 +42,10 @@ namespace Lunacy
             {
                 AppliedAlreadyDontDoItAgainPlease = true;
 
+                Futile.atlasManager.LoadAtlas("Atlases/lunacy");
                 ModDependantWorld.Apply();
-                //PlayerHooks.Apply();
                 InsectHooks.Apply();
-                //PlacesObjects.Apply();
+                Fireflies.Apply();
             }
         }
     }

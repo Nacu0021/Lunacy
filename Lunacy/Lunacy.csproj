@@ -35,6 +35,9 @@
     <Reference Include="BepInEx">
       <HintPath>..\..\..\..\SteamLibrary\steamapps\common\Rain World\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="DevConsole">
+      <HintPath>..\..\..\..\SteamLibrary\steamapps\workshop\content\312520\2920528044\plugins\DevConsole.dll</HintPath>
+    </Reference>
     <Reference Include="Fisobs">
       <HintPath>..\..\..\..\SteamLibrary\steamapps\workshop\content\312520\2920541687\plugins\Fisobs.dll</HintPath>
     </Reference>
@@ -81,8 +84,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Console.cs" />
+    <Compile Include="Creatures\Ballnacle.cs" />
+    <Compile Include="Creatures\BallnacleAI.cs" />
+    <Compile Include="Creatures\BallnacleCritob.cs" />
+    <Compile Include="Creatures\BallnacleGraphics.cs" />
+    <Compile Include="Creatures\GupCritob.cs" />
+    <Compile Include="Creatures\GupGraphics.cs" />
+    <Compile Include="Creatures\GupAI.cs" />
+    <Compile Include="Creatures\Gup.cs" />
+    <Compile Include="Creatures\ZapBugAI.cs" />
+    <Compile Include="Creatures\ZapBugGraphics.cs" />
+    <Compile Include="Creatures\ZapBug.cs" />
+    <Compile Include="Creatures\ZapBugCritob.cs" />
+    <Compile Include="Elites\EliteGraphicsHooks.cs" />
+    <Compile Include="Elites\EliteTriggerHooks.cs" />
+    <Compile Include="Fireflies.cs" />
     <Compile Include="Insects\InsectHooks.cs" />
     <Compile Include="Insects\LightningBug.cs" />
+    <Compile Include="LCustom.cs" />
     <Compile Include="LunacyEnums.cs" />
     <Compile Include="ModDependantWorld.cs" />
     <Compile Include="PhysicalObjects\CoralSpearAbstract.cs" />
@@ -94,6 +114,7 @@
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Insects\Starfish.cs" />
+    <Compile Include="Elites\PrototypeElites.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

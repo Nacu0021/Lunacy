@@ -141,12 +141,12 @@ namespace Lunacy.Insects
 
                 if (spawnAnother && zipCounter == maxzipCounter - 3)
                 {
-                    room.AddObject(new StaticElectricty(lastPosForAnother + Custom.RNV() * 20 * Random.value, pos + Custom.RNV() * 20 * Random.value, Mathf.Lerp(0.25f, 0.66f, Random.value), 0.85f, color));
+                    room.AddObject(new StaticElectricty(lastPosForAnother + Custom.RNV() * 20 * Random.value, pos + Custom.RNV() * 20 * Random.value, Mathf.Lerp(0.25f, 0.66f, Random.value), 0.85f, color, 10f));
                     spawnAnother = Random.value < 0.66f;
                 }
                 if (spawnAnother && zipCounter == maxzipCounter - 5)
                 {
-                    room.AddObject(new StaticElectricty(lastPosForAnother + Custom.RNV() * 20 * Random.value, pos + Custom.RNV() * 20 * Random.value, Mathf.Lerp(0.2f, 0.7f, Random.value), 0.75f, color));
+                    room.AddObject(new StaticElectricty(lastPosForAnother + Custom.RNV() * 20 * Random.value, pos + Custom.RNV() * 20 * Random.value, Mathf.Lerp(0.2f, 0.7f, Random.value), 0.75f, color, 10f));
                     spawnAnother = false;
                 }
                 if (zipCounter < 50)
@@ -158,7 +158,7 @@ namespace Lunacy.Insects
                         {
                             if (Random.value < 0.9f)
                             {
-                                room.AddObject(new StaticElectricty(pos + Custom.RNV() * 10f, pos + Custom.RNV() * 10f, 0.6f, 0.3f, color));
+                                room.AddObject(new StaticElectricty(pos + Custom.RNV() * 10f, pos + Custom.RNV() * 10f, 0.6f, 0.3f, color, 5f));
                             }
                             else
                             {
@@ -180,7 +180,7 @@ namespace Lunacy.Insects
             float zipRange = Random.Range(220f, 400f);
             if (SharedPhysics.RayTraceTilesForTerrain(room, pos, pos + rot * zipRange))
             {
-                room.AddObject(new StaticElectricty(pos, pos + rot * zipRange, Mathf.Lerp(1.5f, 2f, Random.value), 1f, color));
+                room.AddObject(new StaticElectricty(pos, pos + rot * zipRange, Mathf.Lerp(1.5f, 2f, Random.value), 1f, color, 10f));
                 room.PlaySound(SoundID.Spore_Bee_Spark, pos, 0.3f, 1.25f);
                 lastPosForAnother = pos;
                 pos += rot * zipRange;
@@ -258,7 +258,7 @@ namespace Lunacy.Insects
             public float width;
             public float maxlifeTime;
 
-            public StaticElectricty(Vector2 pos, Vector2 goalPos, float width, float lifeTime, Color color)
+            public StaticElectricty(Vector2 pos, Vector2 goalPos, float width, float lifeTime, Color color, float maxDeviation)
             {
                 this.pos = pos;
                 lastPos = pos;
@@ -266,7 +266,7 @@ namespace Lunacy.Insects
                 maxlifeTime = lifeTime;
                 this.lifeTime = lifeTime;
                 inBetweenPoint = Mathf.Lerp(0.2f, 0.8f, Random.value);
-                deviation = Mathf.Lerp(-10f, 10f, Random.value);
+                deviation = Mathf.Lerp(-maxDeviation, maxDeviation, Random.value);
                 this.width = width;
                 this.color = RandomizeColorABit(color, 0.05f, 0.1f);
             }

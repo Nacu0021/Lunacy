@@ -10,10 +10,6 @@
         public static RoomSettings.RoomEffect.Type LightningBugsB;
         public static RoomSettings.RoomEffect.Type Starfishies;
 
-        public static AbstractPhysicalObject.AbstractObjectType CoralSpear;
-
-        public static MultiplayerUnlocks.SandboxUnlockID CoralSpearUnlock;
-
         public static void RegisterEnums()
         {
             LightningBugA = new CosmeticInsect.Type("LightningBugA", true);
@@ -23,10 +19,6 @@
             LightningBugsA = new RoomSettings.RoomEffect.Type("LightningBugsA", true);
             LightningBugsB = new RoomSettings.RoomEffect.Type("LightningBugsB", true);
             Starfishies = new RoomSettings.RoomEffect.Type("Starfishies", true);
-
-            CoralSpear = new AbstractPhysicalObject.AbstractObjectType("CoralSpear", true);
-
-            CoralSpearUnlock = new MultiplayerUnlocks.SandboxUnlockID("CoralSpearUnlock", true);
         }
     }
 }
