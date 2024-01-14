@@ -12,6 +12,20 @@ Available inside the `InsectGroup` object in devtools, and as room effects.
 ### Funny starfish!!
 ![fis](https://github.com/Nacu0021/Lunacy/assets/67332756/d6c9e865-5afc-4958-947e-b5deb286bb9d)
 
+## Firebatflies!!
+![firebatflies](https://github.com/Nacu0021/Lunacy/assets/67332756/2a7312f5-07b8-44ec-a718-8368e22a45de)
+
+You can make any room tagged as `: SWARMROOM` have glowing batflies instead of standard ones!
+To do this, add `: FIREFLIES` after any instance of `: SWARMROOM` you desire.
+You can also specify the hue of these batflies with `: FIREFLIES|hue` where hue is a number from **0 to 360**, or you may instead specify the effect color of the room with `: FIREFLIES|A` where the last letter is either **A or B**.
+For example:
+```
+SU_A40 : SU_A17, SU_B07 : SWARMROOM : FIREFLIES|150
+SU_A06 : SU_A39, SU_A36, SU_A38 : SWARMROOM : FIREFLIES|B
+```
+If you don't specify a color, the batflies will instead be the following color
+
+![firebatfliestwo2](https://github.com/Nacu0021/Lunacy/assets/67332756/6b0e3ae9-5406-4094-9d1f-34e936fa2a64)
 
 ## Mod Conditional Spawns
 Here are some normal spawns:
