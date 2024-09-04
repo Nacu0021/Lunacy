@@ -73,6 +73,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Unity.Mathematics">
+      <HintPath>..\..\..\..\SteamLibrary\steamapps\common\Rain World\RainWorld_Data\Managed\Unity.Mathematics.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\..\..\SteamLibrary\steamapps\common\Rain World\RainWorld_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
@@ -84,37 +87,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Console.cs" />
-    <Compile Include="Creatures\Ballnacle.cs" />
-    <Compile Include="Creatures\BallnacleAI.cs" />
-    <Compile Include="Creatures\BallnacleCritob.cs" />
-    <Compile Include="Creatures\BallnacleGraphics.cs" />
-    <Compile Include="Creatures\GupCritob.cs" />
-    <Compile Include="Creatures\GupGraphics.cs" />
-    <Compile Include="Creatures\GupAI.cs" />
-    <Compile Include="Creatures\Gup.cs" />
-    <Compile Include="Creatures\ZapBugAI.cs" />
-    <Compile Include="Creatures\ZapBugGraphics.cs" />
-    <Compile Include="Creatures\ZapBug.cs" />
-    <Compile Include="Creatures\ZapBugCritob.cs" />
-    <Compile Include="Elites\EliteGraphicsHooks.cs" />
-    <Compile Include="Elites\EliteTriggerHooks.cs" />
+    <Compile Include="CustomFairies.cs" />
+    <Compile Include="CustomSlimeMold.cs" />
     <Compile Include="Fireflies.cs" />
     <Compile Include="Insects\InsectHooks.cs" />
     <Compile Include="Insects\LightningBug.cs" />
-    <Compile Include="LCustom.cs" />
+    <Compile Include="Insects\WaterStrider.cs" />
     <Compile Include="LunacyEnums.cs" />
+    <Compile Include="Metropolis.cs" />
     <Compile Include="ModDependantWorld.cs" />
-    <Compile Include="PhysicalObjects\CoralSpearAbstract.cs" />
-    <Compile Include="PhysicalObjects\CoralSpear.cs" />
-    <Compile Include="PhysicalObjects\CoralSpearFisob.cs" />
-    <Compile Include="PlacedObjects\CoralSpearCoral.cs" />
     <Compile Include="PlacedObjects\PlacesObjects.cs" />
-    <Compile Include="PlayerHooks.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Insects\Starfish.cs" />
-    <Compile Include="Elites\PrototypeElites.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

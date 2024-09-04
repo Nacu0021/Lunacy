@@ -26,6 +26,10 @@ namespace Lunacy.Insects
             //{
             //    return 0.8f;
             //}
+            //if (type == LunacyEnums.WaterStrider)
+            //{
+            //    return 3f;
+            //}
 
             return orig.Invoke(type);
         }
@@ -42,6 +46,11 @@ namespace Lunacy.Insects
                 return room.GetTile(testPos).DeepWater;
             }
 
+            //if (type == LunacyEnums.WaterStrider)
+            //{
+            //    return room.GetTile(testPos).WaterSurface;
+            //}
+
             return orig.Invoke(type, room, testPos);
         }
 
@@ -53,7 +62,8 @@ namespace Lunacy.Insects
             {
                 if (room.roomSettings.effects[i].type == LunacyEnums.LightningBugsA ||
                     room.roomSettings.effects[i].type == LunacyEnums.LightningBugsB ||
-                    room.roomSettings.effects[i].type == LunacyEnums.Starfishies)
+                    room.roomSettings.effects[i].type == LunacyEnums.Starfishies)// ||
+                    //room.roomSettings.effects[i].type == LunacyEnums.WaterStriders)
                 {
                     if (room.insectCoordinator == null)
                     {
@@ -84,6 +94,10 @@ namespace Lunacy.Insects
             {
                 insect = new Starfish(self.room, pos);
             }
+            //else if (type == LunacyEnums.WaterStrider)
+            //{
+            //    insect = new WaterStrider(self.room, pos);
+            //}
             if (insect != null)
             {
                 self.allInsects.Add(insect);
@@ -112,13 +126,17 @@ namespace Lunacy.Insects
             {
                 return LunacyEnums.Starfish;
             }
+            //if (type == LunacyEnums.WaterStriders)
+            //{
+            //    return LunacyEnums.WaterStrider;
+            //}
 
             return orig.Invoke(type);
         }
 
         public static RoomSettingsPage.DevEffectsCategories RoomSettingsPage_DevEffectGetCategoryFromEffectType(On.DevInterface.RoomSettingsPage.orig_DevEffectGetCategoryFromEffectType orig, RoomSettingsPage self, RoomSettings.RoomEffect.Type type)
         {
-            if (type == LunacyEnums.LightningBugsA || type == LunacyEnums.LightningBugsB || type == LunacyEnums.Starfishies)
+            if (type == LunacyEnums.LightningBugsA || type == LunacyEnums.LightningBugsB || type == LunacyEnums.Starfishies)// || type == LunacyEnums.WaterStriders)
             {
                 return RoomSettingsPage.DevEffectsCategories.Insects;
             }

@@ -79,7 +79,7 @@ namespace Lunacy.Insects
         public override void Act()
         {
             base.Act();
-            vel *= Custom.LerpMap(zipCounter, 70, 0, 0.85f, 0.55f, 0.75f);
+            vel *= Custom.LerpMap(zipCounter, 70, 0, 0.9f, 0.55f, 0.75f);
             dir = Vector2.Lerp(this.dir, Custom.RNV() * Mathf.Pow(Random.value, 1.2f), Mathf.Pow(Random.value, 1.9f));
             if (wantToBurrow)
             {
@@ -102,7 +102,7 @@ namespace Lunacy.Insects
             {
                 dir = Vector2.Lerp(this.dir, Custom.DirVec(this.pos, this.mySwarm.placedObject.pos), Mathf.InverseLerp(this.mySwarm.insectGroupData.Rad, this.mySwarm.insectGroupData.Rad + 100f, Vector2.Distance(this.pos, this.mySwarm.placedObject.pos)));
             }
-            if (base.OutOfBounds)
+            if (mySwarm != null && base.OutOfBounds)
             {
                 this.dir = Vector2.Lerp(this.dir, Custom.DirVec(this.pos, this.mySwarm.placedObject.pos), Mathf.InverseLerp(this.mySwarm.insectGroupData.Rad, this.mySwarm.insectGroupData.Rad + 100f, Vector2.Distance(this.pos, this.mySwarm.placedObject.pos)));
             }
@@ -113,7 +113,7 @@ namespace Lunacy.Insects
                 //    if (this.room.GetTile(this.room.GetTilePosition(this.pos) + Custom.fourDirections[i]).Solid ||
                 //        this.room.GetTile(this.room.GetTilePosition(this.pos) + Custom.fourDirections[i] * 3).Solid)
                 //    {
-                //        var vektore = Custom.DirVec(pos, pos - Custom.fourDirections[i].ToVector2());
+                //        var vektore = Custom.DirVec(pos, pos - Custom.fourDirections[i].ToVector2() * 10f);
                 //        dir = Vector2.Lerp(dir, vektore, 0.66f);
                 //    }
                 //}
@@ -127,7 +127,12 @@ namespace Lunacy.Insects
                     }
                 }
 
-                if (room.GetTile(pos + (dir * 20f)).Solid || room.GetTile(pos + (dir * 60f)).Solid) dir = Vector3.Slerp(dir, -dir, 0.33f);
+                if (room.GetTile(pos + (dir * 30f)).Solid || room.GetTile(pos + (dir * 50f)).Solid)
+                {
+                    vel += -dir * 0.4f;
+                    dir = Vector3.Slerp(dir, -dir, 0.66f);;
+                }
+                //if (room.readyForAI && (room.aimap.getAItile(pos + (dir * 20f)).narrowSpace || room.aimap.getAItile(pos + (dir * 40f)).narrowSpace)) dir = Vector3.Slerp(dir, -dir, 0.8f);
 
                 if (submerged) dir = Vector3.Slerp(dir, new Vector2(0, 1f), 0.1f);
             }
@@ -227,7 +232,8 @@ namespace Lunacy.Insects
         public override void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
         {
             base.ApplyPalette(sLeaser, rCam, palette);
-            color = RandomizeColorABit(RoomCamera.allEffectColorsTexture.GetPixel((A ? room.roomSettings.EffectColorA : room.roomSettings.EffectColorB) * 2, 0), 0.0f, 0.1f);
+            color = RandomizeColorABit(rCam.currentPalette.texture.GetPixel(30, A ? 4 : 2), 0f, 0.1f);
+            //color = RandomizeColorABit(RoomCamera.allEffectColorsTexture.GetPixel((A ? room.roomSettings.EffectColorA : room.roomSettings.EffectColorB) * 2, 0), 0.0f, 0.1f);
             sLeaser.sprites[0].color = palette.blackColor;
             sLeaser.sprites[1].color = color;
             if (light != null)
