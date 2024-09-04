@@ -41,6 +41,11 @@ The `SlimeMold` devtools placed object now has new settings for whether it's Big
 
 In the "Lunacy" devtools objects category you can now find a complementary `CustomCosmeticSlimeMold` object, that is basically `CosmeticSlimeMold` with an effect color you pick.
 
+Also included are the `SlimeMoldLightA` and `SlimeMoldLightB` light fixture types in the devtools `LightFixture` placed object, basically the `SlimeMoldLight` but effect colored.
+
+![slight](https://github.com/user-attachments/assets/85dc40cd-7773-4715-9e44-ef9ebe077799)
+
+
 
 ## Custom Fairy Particle Sprites
 ![faiririririr](https://github.com/Nacu0021/Lunacy/assets/67332756/1adde084-9d13-44fc-89c9-f059f8f3435d)
