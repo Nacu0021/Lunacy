@@ -89,6 +89,12 @@
   <ItemGroup>
     <Compile Include="CustomFairies.cs" />
     <Compile Include="CustomSlimeMold.cs" />
+    <Compile Include="CustomTokens\CustomCollectToken.cs" />
+    <Compile Include="CustomTokens\CustomCollectTokenData.cs" />
+    <Compile Include="CustomTokens\CustomTokenDefinition.cs" />
+    <Compile Include="CustomTokens\LunacyTokens.cs" />
+    <Compile Include="CustomTokens\CustomTokenRepresentation.cs" />
+    <Compile Include="CustomTokens\CustomTokenStalk.cs" />
     <Compile Include="Fireflies.cs" />
     <Compile Include="Insects\InsectHooks.cs" />
     <Compile Include="Insects\LightningBug.cs" />
@@ -96,6 +102,7 @@
     <Compile Include="LunacyEnums.cs" />
     <Compile Include="Metropolis.cs" />
     <Compile Include="ModDependantWorld.cs" />
+    <Compile Include="PlacedObjects\AirVentCurrent.cs" />
     <Compile Include="PlacedObjects\PlacesObjects.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

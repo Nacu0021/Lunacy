@@ -2,7 +2,6 @@
 using System.Security.Permissions;
 using System.Security;
 using UnityEngine;
-using Fisobs.Core;
 
 #pragma warning disable CS0618
 [module: UnverifiableCode]
@@ -12,12 +11,14 @@ using Fisobs.Core;
 namespace Lunacy
 {
     using Insects;
+    using CustomTokens;
     using PlacedObjects;
 
-    [BepInPlugin("nacu.lunacy", "Lunacy", "1.5")]
+    [BepInPlugin("nacu.lunacy", "Lunacy", "1.6")]
     public class Plugin : BaseUnityPlugin
     {
         public static bool AppliedAlreadyDontDoItAgainPlease;
+        public static bool AppliedAlreadyDontDoItAgainPleasePart2;
         internal static BepInEx.Logging.ManualLogSource logger;
 
         public void OnEnable()
@@ -25,14 +26,17 @@ namespace Lunacy
             logger = Logger;
             LunacyEnums.RegisterEnums();
             On.RainWorld.OnModsInit += OnModsInit;
+            On.RainWorld.PostModsInit += PostModsInit;
         }
 
         public void OnDisable()
         {
             logger = null;
+            AppliedAlreadyDontDoItAgainPlease = false;
+            AppliedAlreadyDontDoItAgainPleasePart2 = false;
         }
 
-        public static void OnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld raingame)
+        private static void OnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld raingame)
         {
             orig.Invoke(raingame);
 
@@ -48,6 +52,19 @@ namespace Lunacy
                 CustomFairies.Apply();
                 Metropolis.Apply();
                 CustomSlimeMoldHooks.Apply();
+                LunacyTokens.Apply();
+            }
+        }
+
+        private static void PostModsInit(On.RainWorld.orig_PostModsInit orig, RainWorld self)
+        {
+            orig.Invoke(self);
+
+            if (!AppliedAlreadyDontDoItAgainPleasePart2)
+            {
+                AppliedAlreadyDontDoItAgainPleasePart2 = true;
+
+                LunacyTokens.AddCustomTokens();
             }
         }
     }

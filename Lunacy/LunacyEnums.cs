@@ -17,6 +17,8 @@
         public static PlacedObject.LightFixtureData.Type SlimeMoldLightA;
         public static PlacedObject.LightFixtureData.Type SlimeMoldLightB;
 
+        public static SoundID ExportedMechActive;
+
         public static void RegisterEnums()
         {
             LightningBugA = new ("LightningBugA", true);
@@ -33,6 +35,8 @@
 
             SlimeMoldLightA = new("SlimeMoldLightA", true);
             SlimeMoldLightB = new("SlimeMoldLightB", true);
+
+            ExportedMechActive = new("lunacy_mech_active", true);
         }
     }
 }
