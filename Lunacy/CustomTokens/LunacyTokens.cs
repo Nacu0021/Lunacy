@@ -77,25 +77,33 @@ namespace Lunacy.CustomTokens
                 a.EmitDelegate<Action<CollectiblesTracker, RainWorld, int, SlugcatStats.Name>>((self, rainWorld, l, saveSlot) =>
                 {
                     string region = self.displayRegions[l];
+                    if (regionCustomTokens.Keys.Count == 0) return;
                     foreach (string key in regionCustomTokens.Keys)
                     {
                         if (CustomTokenDefinitions.TryGetValue(key, out var definition) &&
                             CustomTokenProgressions.TryGetValue(rainWorld.progression.currentSaveState.progression.miscProgressionData, out var progressions))
                         {
+                            if (!regionCustomTokens[key].ContainsKey(region)) continue;
                             for (int i = 0; i < regionCustomTokens[key][region].Count; i++)
                             {
                                 if (regionCustomTokensAccessibility[key][region][i].Contains(saveSlot))
                                 {
-                                    self.spriteColors[region].Add(definition.tokenColor);
-
-                                    CustomTokenProgression progression = progressions.FirstOrDefault(x => x.tokenID.ToUpperInvariant() == key.ToUpperInvariant());
-                                    if (progression == null || !progression.unlockedTokens.Contains(regionCustomTokens[key][region][i]))
+                                    if (self.spriteColors.ContainsKey(region))
                                     {
-                                        self.sprites[region].Add(new FSprite("ctOff", true));
+                                        self.spriteColors[region].Add(definition.tokenColor);
                                     }
-                                    else
+
+                                    if (self.sprites.ContainsKey(region))
                                     {
-                                        self.sprites[region].Add(new FSprite("ctOn", true));
+                                        CustomTokenProgression progression = progressions.FirstOrDefault(x => x.tokenID.ToUpperInvariant() == key.ToUpperInvariant());
+                                        if (progression == null || !progression.unlockedTokens.Contains(regionCustomTokens[key][region][i]))
+                                        {
+                                            self.sprites[region].Add(new FSprite("ctOff", true));
+                                        }
+                                        else
+                                        {
+                                            self.sprites[region].Add(new FSprite("ctOn", true));
+                                        }
                                     }
                                 }
                             }
@@ -130,8 +138,8 @@ namespace Lunacy.CustomTokens
             else Plugin.logger.LogError("RainWorld_ReadTokenCacheILA FAILURE!!!\n" + il);
 
             ILCursor b = new(il);
-            ILCursor l = new(il);
-            ILLabel lable = null;
+            //ILCursor l = new(il);
+           // ILLabel lable = null;
 
             //if (l.TryGotoNext(MoveType.After,
             //    x => x.MatchLdloc(4),
@@ -190,13 +198,10 @@ namespace Lunacy.CustomTokens
         private static void RainWorld_BuildTokenCacheIL(ILContext il)
         {
             ILCursor a = new(il); // Create new lists inside the lock
-            if (a.TryGotoNext(MoveType.Before,
-                x => x.MatchCallOrCallvirt("System.Threading.Monitor", "Enter"),
-                x => x.MatchLdarg(0),
-                x => x.MatchLdfld<RainWorld>("regionBlueTokens")
+            if (a.TryGotoNext(MoveType.After,
+                x => x.MatchCallOrCallvirt("System.Threading.Monitor", "Enter")
                 ))
             {
-                a.Index += 1;
                 a.Emit(OpCodes.Ldarg_2);
                 a.EmitDelegate<Action<string>>((region) =>
                 {

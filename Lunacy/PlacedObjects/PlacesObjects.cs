@@ -51,8 +51,6 @@ namespace Lunacy.PlacedObjects
                     {
                         if (obj.type.value == key)
                         {
-                            Plugin.logger.LogWarning("yippee " + key);
-
                             if (!(room.game.session is StoryGameSession) || 
                                 room.world.singleRoomWorld || 
                                 !LunacyTokens.GetCustomTokenCollected((room.game.session as StoryGameSession).game.rainWorld.progression.miscProgressionData, key, (obj.data as CustomCollectTokenData).tokenString))
