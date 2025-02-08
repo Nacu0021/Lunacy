@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using System.Security.Permissions;
 using System.Security;
-using UnityEngine;
 
 #pragma warning disable CS0618
 [module: UnverifiableCode]
@@ -14,7 +13,7 @@ namespace Lunacy
     using CustomTokens;
     using PlacedObjects;
 
-    [BepInPlugin("nacu.lunacy", "Lunacy", "1.61")]
+    [BepInPlugin("nacu.lunacy", "Lunacy", "1.63")]
     public class Plugin : BaseUnityPlugin
     {
         public static bool AppliedAlreadyDontDoItAgainPlease;
@@ -27,6 +26,7 @@ namespace Lunacy
             LunacyEnums.RegisterEnums();
             On.RainWorld.OnModsInit += OnModsInit;
             On.RainWorld.PostModsInit += PostModsInit;
+            IL.Menu.InitializationScreen.Update += LunacyTokens.InitializationScreen_UpdateIL;
         }
 
         public void OnDisable()

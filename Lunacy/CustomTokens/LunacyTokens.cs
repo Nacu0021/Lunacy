@@ -7,6 +7,10 @@ using System.Linq;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MoreSlugcats;
+using Menu;
+using System.IO;
+using RWCustom;
+using UnityEngine;
 
 namespace Lunacy.CustomTokens
 {
@@ -44,8 +48,10 @@ namespace Lunacy.CustomTokens
             On.PlayerProgression.MiscProgressionData.FromString += MiscProgressionData_FromString;
             On.RainWorld.ClearTokenCacheInMemory += RainWorld_ClearTokenCacheInMemory;
             IL.RainWorld.BuildTokenCache += RainWorld_BuildTokenCacheIL;
+            On.RainWorld.BuildTokenCache += RainWorld_BuildTokenCache; ;
             IL.RainWorld.ReadTokenCache += RainWorld_ReadTokenCacheIL;
-            IL.MoreSlugcats.CollectiblesTracker.ctor += CollectiblesTracker_ctorIL;
+            //IL.MoreSlugcats.CollectiblesTracker.ctor += CollectiblesTracker_ctorIL;
+            On.MoreSlugcats.CollectiblesTracker.ctor += CollectiblesTracker_ctor;
         }
 
         internal static void AddCustomTokens()
@@ -62,56 +68,163 @@ namespace Lunacy.CustomTokens
             }
         }
 
-        private static void CollectiblesTracker_ctorIL(ILContext il)
+        public static void InitializationScreen_UpdateIL(ILContext il)
         {
-            ILCursor a = new(il);
-            if (a.TryGotoNext(MoveType.Before,
-                x => x.MatchLdsfld<ModManager>("MSC")
+            ILCursor c = new ILCursor(il);
+
+            if (c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdloc(16),
+                x => x.MatchBrtrue(out _),
+                x => x.MatchLdarg(0),
+                x => x.MatchLdfld<InitializationScreen>("filesInBadState"),
+                x => x.MatchBrfalse(out _)
                 ))
             {
-                a.MoveAfterLabels();
-                a.Emit(OpCodes.Ldarg_0);
-                a.Emit(OpCodes.Ldloc, 0);
-                a.Emit(OpCodes.Ldloc, 5);
-                a.Emit(OpCodes.Ldarg, 5);
-                a.EmitDelegate<Action<CollectiblesTracker, RainWorld, int, SlugcatStats.Name>>((self, rainWorld, l, saveSlot) =>
+                c.MoveAfterLabels();
+                c.Emit(OpCodes.Ldarg_0);
+                c.Emit(OpCodes.Ldloc, 16);
+                c.EmitDelegate<Func<InitializationScreen, bool, bool>>((self, flag2) =>
                 {
-                    string region = self.displayRegions[l];
-                    if (regionCustomTokens.Keys.Count == 0) return;
-                    foreach (string key in regionCustomTokens.Keys)
+                    if (!flag2)
                     {
-                        if (CustomTokenDefinitions.TryGetValue(key, out var definition) &&
-                            CustomTokenProgressions.TryGetValue(rainWorld.progression.currentSaveState.progression.miscProgressionData, out var progressions))
-                        {
-                            if (!regionCustomTokens[key].ContainsKey(region)) continue;
-                            for (int i = 0; i < regionCustomTokens[key][region].Count; i++)
+                        bool forceRecomputeTokenCache = false;
+                        string text4 = string.Concat(new string[]
                             {
-                                if (regionCustomTokensAccessibility[key][region][i].Contains(saveSlot))
-                                {
-                                    if (self.spriteColors.ContainsKey(region))
-                                    {
-                                        self.spriteColors[region].Add(definition.tokenColor);
-                                    }
+                                Custom.RootFolderDirectory(),
+                                Path.DirectorySeparatorChar.ToString(),
+                                "mergedmods",
+                                Path.DirectorySeparatorChar.ToString(),
+                                "World",
+                                Path.DirectorySeparatorChar.ToString(),
+                                "IndexMaps"
+                            }).ToLowerInvariant();
+                        Directory.CreateDirectory(text4);
 
-                                    if (self.sprites.ContainsKey(region))
+                        if (File.Exists(text4 + Path.DirectorySeparatorChar + "recomputetokencache.txt"))
+                        {
+                            return true;
+                        }
+
+                        List<string> forceRecomputeRegions = [];
+                        string[] allRegions = [];
+                        string regionsPath = AssetManager.ResolveFilePath("World" + Path.DirectorySeparatorChar + "regions.txt");
+                        if (!File.Exists(regionsPath))
+                        {
+                            return flag2;
+                        }
+                        allRegions = File.ReadAllLines(regionsPath);
+                        foreach (var region in allRegions)
+                        {
+                            string forceRecomputePath = AssetManager.ResolveFilePath("world" + Path.DirectorySeparatorChar + region + Path.DirectorySeparatorChar + "forcetokencache.txt");
+                           
+                            if (!File.Exists(forceRecomputePath)) continue;
+                            string contents = File.ReadAllText(forceRecomputePath);
+                            if (!string.IsNullOrEmpty(contents))
+                            {
+                                if (contents.ToLowerInvariant() == "always")
+                                {
+                                    Plugin.logger.LogMessage("Forcing token cache recompute from " + region);
+                                    forceRecomputeTokenCache = true;
+                                    break;
+                                }
+                                else if (contents.ToLowerInvariant() == "lunacy")
+                                {
+                                    string lunacyTokenCacheRegionPath = AssetManager.ResolveFilePath("world" + Path.DirectorySeparatorChar + "indexmaps" + Path.DirectorySeparatorChar + "lunacytokencache" + region.ToLowerInvariant() + ".txt");
+                                    if (File.Exists(lunacyTokenCacheRegionPath)) continue;
+
+                                    Plugin.logger.LogMessage("Forcing token cache recompute from " + region);
+                                    forceRecomputeTokenCache = true;
+                                    break;
+                                }
+                            }
+
+                            if (forceRecomputeTokenCache) break;
+
+                            string tokenCacheRegionPath = AssetManager.ResolveFilePath("world" + Path.DirectorySeparatorChar + "indexmaps" + Path.DirectorySeparatorChar + "tokencache" + region.ToLowerInvariant() + ".txt");
+                            if (File.Exists(tokenCacheRegionPath))
+                            {
+                                string cacheContents = File.ReadAllText(tokenCacheRegionPath);
+                                bool empty = true;
+                                foreach (char ch in cacheContents)
+                                {
+                                    if (ch == ' ') continue;
+                                    if (ch != '&')
                                     {
-                                        CustomTokenProgression progression = progressions.FirstOrDefault(x => x.tokenID.ToUpperInvariant() == key.ToUpperInvariant());
-                                        if (progression == null || !progression.unlockedTokens.Contains(regionCustomTokens[key][region][i]))
-                                        {
-                                            self.sprites[region].Add(new FSprite("ctOff", true));
-                                        }
-                                        else
-                                        {
-                                            self.sprites[region].Add(new FSprite("ctOn", true));
-                                        }
+                                        empty = false;
+                                        break;
                                     }
+                                }
+                                if (empty)
+                                {
+                                    Plugin.logger.LogMessage("Forcing token cache recompute from " + region);
+                                    forceRecomputeTokenCache = true;
+                                    break;
+                                }
+                                continue;
+                            }
+                            Plugin.logger.LogMessage("Forcing token cache recompute from " + region);
+                            forceRecomputeTokenCache = true;
+                            break;
+                        }
+
+                        if (forceRecomputeTokenCache)
+                        {
+                            File.WriteAllText(text4 + Path.DirectorySeparatorChar + "recomputetokencache.txt", "");
+                            flag2 = true;
+                        }
+                    }
+
+                    return flag2;
+                });
+                c.Emit(OpCodes.Stloc, 16);
+            }
+            else Plugin.logger.LogError("InitializationScreen_UpdateIL failed spectacularly " + il);
+        }
+
+        private static void CollectiblesTracker_ctor(On.MoreSlugcats.CollectiblesTracker.orig_ctor orig, CollectiblesTracker self, Menu.Menu menu, MenuObject owner, UnityEngine.Vector2 pos, FContainer container, SlugcatStats.Name saveSlot)
+        {
+            orig.Invoke(self, menu, owner, pos, container, saveSlot);
+            RainWorld rainWorld = menu.manager.rainWorld;
+            for (int l = 0; l < self.displayRegions.Count; l++)
+            {
+                string region = self.displayRegions[l];
+                if (regionCustomTokens.Keys.Count == 0) return;
+                foreach (string key in regionCustomTokens.Keys)
+                {
+                    if (!regionCustomTokens.ContainsKey(key)) continue;
+                    if (!regionCustomTokensAccessibility.ContainsKey(key)) continue;
+
+                    if (CustomTokenDefinitions.TryGetValue(key, out var definition) &&
+                        CustomTokenProgressions.TryGetValue(rainWorld.progression.currentSaveState.progression.miscProgressionData, out var progressions))
+                    {
+                        if (!regionCustomTokens[key].ContainsKey(region)) continue;
+                        if (!regionCustomTokensAccessibility[key].ContainsKey(region)) continue;
+
+                        for (int i = 0; i < regionCustomTokens[key][region].Count; i++)
+                        {
+                            if (regionCustomTokensAccessibility[key][region][i].Contains(saveSlot))
+                            {
+                                if (self.sprites.ContainsKey(region) && self.spriteColors.ContainsKey(region))
+                                {
+                                    string element = "ctOn";
+                                    CustomTokenProgression progression = progressions.FirstOrDefault(x => x.tokenID.ToUpperInvariant() == key.ToUpperInvariant());
+                                    if (progression == null || !progression.unlockedTokens.Contains(regionCustomTokens[key][region][i]))
+                                    {
+                                        element = "ctOff";
+                                    }
+                                    FSprite sprite = new FSprite(element, true);
+                                    Color color = definition.tokenColor;
+                                    sprite.color = color;
+                                    self.spriteColors[region].Add(color);
+                                    self.sprites[region].Add(sprite);
+
+                                    container.AddChild(sprite);
                                 }
                             }
                         }
                     }
-                });
+                }
             }
-            else Plugin.logger.LogError("CollectiblesTracker_ctorIL FAILURE!!!\n" + il);
         }
 
         private static void RainWorld_ReadTokenCacheIL(ILContext il)
@@ -133,66 +246,45 @@ namespace Lunacy.CustomTokens
                         regionCustomTokens[key][text] = new();
                         regionCustomTokensAccessibility[key][text] = new();
                     }
+
+                    string path = AssetManager.ResolveFilePath(string.Concat(new string[]
+                    {
+                        "World",
+                        Path.DirectorySeparatorChar.ToString(),
+                        "indexmaps",
+                        Path.DirectorySeparatorChar.ToString(),
+                        "lunacytokencache",
+                        text,
+                        ".txt"
+                    }));
+                    if (File.Exists(path))
+                    {
+                        string[] array = File.ReadAllText(path).Split('&');
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            if (string.IsNullOrEmpty(array[i])) continue;
+                            string[] tokens = array[i].Split(',');
+                            for (int t = 0; t < tokens.Length; t++)
+                            {
+                                string[] keyValueAndSlugcats = tokens[t].Split('~');
+                                int minusIndex = keyValueAndSlugcats[0].IndexOf('-');
+                                string key = keyValueAndSlugcats[0].Substring(0, minusIndex);
+                                string value = keyValueAndSlugcats[0].Substring(minusIndex + 1);
+                                string[] slugcats = keyValueAndSlugcats[1].Split('|');
+
+                                List<SlugcatStats.Name> list = [];
+                                for (int s = 0; s < slugcats.Length; s++)
+                                {
+                                    list.Add(new SlugcatStats.Name(slugcats[s], false));
+                                }
+                                regionCustomTokens[key][text].Add(value);
+                                regionCustomTokensAccessibility[key][text].Add(list);
+                            }
+                        }
+                    }
                 });
             }
             else Plugin.logger.LogError("RainWorld_ReadTokenCacheILA FAILURE!!!\n" + il);
-
-            ILCursor b = new(il);
-            //ILCursor l = new(il);
-           // ILLabel lable = null;
-
-            //if (l.TryGotoNext(MoveType.After,
-            //    x => x.MatchLdloc(4),
-            //    x => x.MatchCallOrCallvirt("System.IO.File", "Exists"),
-            //    x => x.MatchBrfalse(out lable)
-            //    ) && lable != null)
-            //{
-                if (b.TryGotoNext(MoveType.After,
-                    x => x.MatchCallOrCallvirt<string>("Split"),
-                    x => x.MatchStloc(5)
-                    ))
-                {
-                    b.Emit(OpCodes.Ldloc, 3);
-                    b.Emit(OpCodes.Ldloc, 5); 
-                    b.EmitDelegate<Action<string, string[]>>((text, array) =>
-                    {
-                        //bool skip = false;
-                        int startIndex = ModManager.MSC ? 6 : 3;
-                        int endIndex = array.Length;
-                        if (endIndex > startIndex)
-                        {
-                            for (int i = startIndex; i < endIndex; i++)
-                            {
-                                if (string.IsNullOrEmpty(array[i])) continue;
-                                string[] tokens = array[i].Split(',');
-                                for (int t = 0; t < tokens.Length; t++)
-                                {
-                                    string[] keyValueAndSlugcats = tokens[t].Split('~');
-                                    int minusIndex = keyValueAndSlugcats[0].IndexOf('-');
-                                    string key = keyValueAndSlugcats[0].Substring(0, minusIndex);
-                                    string value = keyValueAndSlugcats[0].Substring(minusIndex + 1);
-                                    string[] slugcats = keyValueAndSlugcats[1].Split('|');
-
-                                    List<SlugcatStats.Name> list = [];
-                                    for (int s = 0; s < slugcats.Length; s++)
-                                    {
-                                        list.Add(new SlugcatStats.Name(slugcats[s], false));
-                                    }
-                                    regionCustomTokens[key][text].Add(value);
-                                    regionCustomTokensAccessibility[key][text].Add(list);
-                                }
-                                
-                                //skip = true;
-                            }
-                        }
-
-                        //return skip;
-                    });
-                    //b.Emit(OpCodes.Brtrue, lable);
-                }
-                else Plugin.logger.LogError("RainWorld_ReadTokenCacheILBB FAILURE!!!\n" + il);
-            //}
-            //else Plugin.logger.LogError("RainWorld_ReadTokenCacheILBL FAILURE!!!\n" + il);
         }
 
         private static void RainWorld_BuildTokenCacheIL(ILContext il)
@@ -256,37 +348,56 @@ namespace Lunacy.CustomTokens
                 });
             }
             else Plugin.logger.LogError("RainWorld_BuildTokenCacheB FAILURE!!!\n" + il);
+        }
 
-            ILCursor c = new(il); // Add text data to file
-            if (c.TryGotoNext(MoveType.Before,
-                x => x.MatchCallOrCallvirt("System.IO.File", "WriteAllText")
-                ))
+        private static void RainWorld_BuildTokenCache(On.RainWorld.orig_BuildTokenCache orig, RainWorld self, bool modded, string region)
+        {
+            orig.Invoke(self, modded, region);
+
+            string text = string.Concat(new string[]
             {
-                c.Emit(OpCodes.Ldarg_2);
-                c.EmitDelegate<Func<string, string, string>>((orig, region) =>
+                Custom.RootFolderDirectory(),
+                Path.DirectorySeparatorChar.ToString(),
+                "World",
+                Path.DirectorySeparatorChar.ToString(),
+                "IndexMaps",
+                Path.DirectorySeparatorChar.ToString()
+            }).ToLowerInvariant();
+            if (modded)
+            {
+                text = string.Concat(new string[]
                 {
-                    string fileName = region.ToLowerInvariant();
-
-                    foreach (string key in regionCustomTokens.Keys)
-                    {
-                        orig += "&";
-
-                        for (int i = 0; i < regionCustomTokens[key][fileName].Count; i++)
-                        {
-                            string str7 = string.Join("|", Array.ConvertAll<SlugcatStats.Name, string>(regionCustomTokensAccessibility[key][fileName][i].ToArray(), (SlugcatStats.Name x) => x.ToString()));
-                            string keyTokenString = key + "-" + regionCustomTokens[key][fileName][i];
-                            orig += ((keyTokenString != null) ? keyTokenString.ToString() : null) + "~" + str7;
-                            if (i != regionCustomTokens[key][fileName].Count - 1)
-                            {
-                                orig += ",";
-                            }
-                        }
-                    }
-
-                    return orig;
-                });
+                    Custom.RootFolderDirectory(),
+                    Path.DirectorySeparatorChar.ToString(),
+                    "mergedmods",
+                    Path.DirectorySeparatorChar.ToString(),
+                    "World",
+                    Path.DirectorySeparatorChar.ToString(),
+                    "IndexMaps"
+                }).ToLowerInvariant();
+                Directory.CreateDirectory(text);
+                text += Path.DirectorySeparatorChar.ToString();
             }
-            else Plugin.logger.LogError("RainWorld_BuildTokenCacheC FAILURE!!!\n" + il);
+            string fileName = region.ToLowerInvariant();
+
+            string contents = "";
+            foreach (string key in regionCustomTokens.Keys)
+            {
+                for (int i = 0; i < regionCustomTokens[key][fileName].Count; i++)
+                {
+                    string str7 = string.Join("|", Array.ConvertAll<SlugcatStats.Name, string>(regionCustomTokensAccessibility[key][fileName][i].ToArray(), (SlugcatStats.Name x) => x.ToString()));
+                    string keyTokenString = key + "-" + regionCustomTokens[key][fileName][i];
+                    contents += ((keyTokenString != null) ? keyTokenString.ToString() : null) + "~" + str7;
+                    if (i != regionCustomTokens[key][fileName].Count - 1)
+                    {
+                        contents += ",";
+                    }
+                }
+
+                contents += "&";
+            }
+            contents = contents.Substring(0, contents.Length - 1);
+            if (contents != "" && contents != null) File.WriteAllText(text + "lunacytokencache" + fileName + ".txt", contents);
         }
 
         private static void RainWorld_ClearTokenCacheInMemory(On.RainWorld.orig_ClearTokenCacheInMemory orig, RainWorld self)
