@@ -109,8 +109,6 @@ namespace Lunacy.CustomTokens
             public class IndexControlSlider : Slider
             {
                 public int maxNubInt;
-                private int helpSlider;
-                private int helpSlider_cooldown;
                 public CustomTokenDefinition definition;
 
                 public CustomCollectTokenData TokenData
@@ -124,8 +122,6 @@ namespace Lunacy.CustomTokens
                 public IndexControlSlider(DevUI owner, string IDstring, DevUINode parentNode, Vector2 pos, string title, CustomTokenDefinition definition) : base(owner, IDstring, parentNode, pos, title, false, 110f)
                 {
                     this.definition = definition;
-                    helpSlider = 0;
-                    helpSlider_cooldown = 0;
                     maxNubInt = definition.acceptableValues.Count - 1;
                 }
 

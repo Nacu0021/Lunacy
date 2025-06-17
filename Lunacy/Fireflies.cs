@@ -37,16 +37,15 @@ namespace Lunacy
             On.Fly.Update += Fly_Update;
 
             // CRS please fix yourself
-            IL.World.LoadMapConfig += World_LoadMapConfig;
-            //On.World.LoadMapConfig += World_LoadMapConfig1;
+            IL.World.LoadMapConfig_Timeline += World_LoadMapConfig;
 
             // Thing i dont yeah thing.
-            On.World.LoadWorld += World_LoadWorld;
+            On.World.LoadWorld_Timeline_List1_Int32Array_Int32Array_Int32Array += World_LoadWorld;
         }
 
-        private static void World_LoadWorld(On.World.orig_LoadWorld orig, World self, SlugcatStats.Name slugcatNumber, List<AbstractRoom> abstractRoomsList, int[] swarmRooms, int[] shelters, int[] gates)
+        private static void World_LoadWorld(On.World.orig_LoadWorld_Timeline_List1_Int32Array_Int32Array_Int32Array orig, World self, SlugcatStats.Timeline timeline, List<AbstractRoom> abstractRoomsList, int[] swarmRooms, int[] shelters, int[] gates)
         {
-            orig.Invoke(self, slugcatNumber, abstractRoomsList, swarmRooms, shelters, gates);
+            orig.Invoke(self, timeline, abstractRoomsList, swarmRooms, shelters, gates);
 
             AbstractRoomEffectA.Clear();
             AbstractRoomEffectB.Clear();
@@ -57,32 +56,12 @@ namespace Lunacy
                 if (room.roomTags == null) continue;
                 if (room.roomTags.Any(x => x.StartsWith("FIREFLIES")))
                 {
-                    RoomSettings tempSettings = new RoomSettings(room.name, self.region, false, false, slugcatNumber);
-                    Plugin.logger.LogWarning(room.name + " " + tempSettings.EffectColorA + " - " + tempSettings.EffectColorB);
+                    RoomSettings tempSettings = new(room.name, self.region, false, false, timeline, self.game);
                     AbstractRoomEffectA[room.name] = tempSettings.EffectColorA;
                     AbstractRoomEffectB[room.name] = tempSettings.EffectColorB;
                     tempSettings = null;
                 }
             }
-        }
-
-        private static void World_LoadMapConfig1(On.World.orig_LoadMapConfig orig, World self, SlugcatStats.Name slugcatNumber)
-        {
-            string path = AssetManager.ResolveFilePath(string.Concat(new string[]
-            {
-                "World",
-                Path.DirectorySeparatorChar.ToString(),
-                self.name,
-                Path.DirectorySeparatorChar.ToString(),
-                "Properties.txt"
-            }));
-
-            string[] array = File.ReadAllLines(path);
-            for (int k = 0; k < array.Length; k++)
-            {
-                Plugin.logger.LogMessage(array[k]);
-            }
-            orig.Invoke(self, slugcatNumber);
         }
 
         public static void World_LoadMapConfig(ILContext il)
@@ -154,7 +133,7 @@ namespace Lunacy
                     }
                 });
             }
-            else Plugin.logger.LogMessage("World_LoadMapConfig FAILED " + il);
+            else Plugin.logger.LogError("World_LoadMapConfig FAILED " + il);
         }
 
         public static void Fly_Update(On.Fly.orig_Update orig, Fly self, bool eu)
@@ -200,7 +179,7 @@ namespace Lunacy
                     return orig;
                 });
             }
-            else Plugin.logger.LogMessage("World_MoveQuantifiedCreatureFromAbstractRoom FAILED " + il);
+            else Plugin.logger.LogError("World_MoveQuantifiedCreatureFromAbstractRoom FAILED " + il);
         }
 
         public static void Room_PlaceQuantifiedCreaturesInRoomIL(ILContext il)
@@ -218,7 +197,7 @@ namespace Lunacy
                     if (room.abstractRoom.roomTags != null) MakeFlyFireEmoji(room.abstractRoom.name, crit, room.abstractRoom.roomTags.Find(x => x.StartsWith("FIREFLIES")));
                 });
             }
-            else Plugin.logger.LogMessage("Room_PlaceQuantifiedCreaturesInRoomIL FAILED " + il);
+            else Plugin.logger.LogError("Room_PlaceQuantifiedCreaturesInRoomIL FAILED " + il);
         }
 
         public static void FliesRoomAI_CreateFlyInHive(On.FliesRoomAI.orig_CreateFlyInHive orig, FliesRoomAI self)
@@ -257,7 +236,6 @@ namespace Lunacy
                 thinj = new FliedFireFly(c, Mathf.Clamp(hue, 0f, 360f) / 360f);
             skippy:
                 FiredFly.Add(c, thinj);
-                Plugin.logger.LogMessage("Turning guy into fly");
             }
         }
 

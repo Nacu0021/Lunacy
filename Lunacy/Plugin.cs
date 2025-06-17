@@ -13,7 +13,7 @@ namespace Lunacy
     using CustomTokens;
     using PlacedObjects;
 
-    [BepInPlugin("nacu.lunacy", "Lunacy", "1.63")]
+    [BepInPlugin("nacu.lunacy", "Lunacy", "1.7")]
     public class Plugin : BaseUnityPlugin
     {
         public static bool AppliedAlreadyDontDoItAgainPlease;

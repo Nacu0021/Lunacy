@@ -76,9 +76,9 @@ namespace Lunacy
                 c.TryGotoNext(MoveType.After,
                 x => x.MatchCallOrCallvirt<Room>("AddObject")
                 ))
-            {
+            {   
                 c.Emit(OpCodes.Ldarg_0);
-                c.Emit(OpCodes.Ldloc, 23); // This will break in the update
+                c.Emit(OpCodes.Ldloc, 27); // This will break in the update. This did break in the update...
                 c.EmitDelegate<Action<Room, int>>((room, i) =>
                 {
                     if (room.updateList.Last() is SlimeMold.CosmeticSlimeMold slime && !CustomCosmeticSlime.TryGetValue(slime, out _))
@@ -100,7 +100,7 @@ namespace Lunacy
             {
                 b.Index += 2;
                 b.Emit(OpCodes.Ldarg_0);
-                b.Emit(OpCodes.Ldloc, 23);
+                b.Emit(OpCodes.Ldloc, 27);
                 b.EmitDelegate<Action<Room, int>>((room, num10) =>
                 {
                     if ((room.roomSettings.placedObjects[num10].data as PlacedObject.LightFixtureData).type == LunacyEnums.SlimeMoldLightA)
@@ -243,7 +243,7 @@ namespace Lunacy
                 x => x.MatchStfld<AbstractPhysicalObject>("unrecognizedAttributes")
                 ))
             {
-                c.Emit(OpCodes.Ldloc, 4);
+                c.Emit(OpCodes.Ldloc, 5);
                 c.EmitDelegate<Action<AbstractPhysicalObject>>((self) =>
                 {
                     if (self.unrecognizedAttributes != null)

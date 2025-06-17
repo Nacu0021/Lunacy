@@ -15,11 +15,11 @@ namespace Lunacy.PlacedObjects
         public float airRefill;
         public bool bubbles;
         public bool sound;
-        public bool pushPhysical;
         public int spawnBubblesCounter;
         public PositionedSoundEmitter soundEmitter;
         public float soundVol;
         public bool initialized;
+        public float maxVolume;
 
         public ManagedData data => obj.data as ManagedData;
 
@@ -35,6 +35,7 @@ namespace Lunacy.PlacedObjects
             bubbles = data.GetValue<bool>("bubbles");
             sound = data.GetValue<bool>("sound");
             airRefill = data.GetValue<float>("air");
+            maxVolume = data.GetValue<float>("volume");
             if (circle)
             {
                 radius = data.GetValue<Vector2>("handle").magnitude;
@@ -47,7 +48,6 @@ namespace Lunacy.PlacedObjects
                 rect = new FloatRect(left, bottom, left == handlePos.x ? obj.pos.x : handlePos.x, bottom == handlePos.y ? obj.pos.y : handlePos.y);
                 strength = data.GetValue<float>("strength");
                 angle = Custom.DegToVec(data.GetValue<float>("angle"));
-                pushPhysical = data.GetValue<bool>("push");
             }
             initialized = true;
         }
@@ -75,9 +75,6 @@ namespace Lunacy.PlacedObjects
                             if (dist < radius + chunk.rad)
                             {
                                 inRange = true;
-                                //float fac = Mathf.InverseLerp(chunk.rad, 0f, dist - radius);
-                                //chunk.pos += angle * strength * fac * 0.5f;
-                                //chunk.vel += angle * strength * fac * 0.5f;
                             }
                         }
                         else
@@ -86,12 +83,6 @@ namespace Lunacy.PlacedObjects
                             if (dist < chunk.rad)
                             {
                                 inRange = true;
-                                if (pushPhysical)
-                                {
-                                    float fac = Mathf.InverseLerp(chunk.rad, 0f, dist);
-                                    chunk.pos += angle * strength * fac * 0.5f;
-                                    chunk.vel += angle * strength * fac * 0.5f;
-                                }
                             }
                         }
                     }
@@ -184,7 +175,7 @@ namespace Lunacy.PlacedObjects
                         soundEmitter.requireActiveUpkeep = true;
                     }
                     soundEmitter.alive = true;
-                    soundEmitter.volume = soundVol;
+                    soundEmitter.volume = Mathf.Min(maxVolume, soundVol);
                     if (soundEmitter.slatedForDeletetion && !soundEmitter.soundStillPlaying)
                     {
                         soundEmitter = null;

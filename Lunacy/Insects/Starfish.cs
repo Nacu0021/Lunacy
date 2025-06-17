@@ -120,7 +120,7 @@ namespace Lunacy.Insects
                 }
                 if (this.room.water)
                 {
-                    dir = Vector3.Slerp(dir, new Vector2(0f, -1f), Mathf.InverseLerp(this.room.FloatWaterLevel(this.pos.x) - 100f, this.room.FloatWaterLevel(this.pos.x), this.pos.y) * 0.05f);
+                    dir = Vector3.Slerp(dir, new Vector2(0f, -1f), Mathf.InverseLerp(this.room.FloatWaterLevel(this.pos) - 100f, this.room.FloatWaterLevel(this.pos), this.pos.y) * 0.05f);
                 }
                 if (room.GetTile(pos + (dir * 40f)).Solid || !room.GetTile(pos + (dir * 40f)).AnyWater)
                 {

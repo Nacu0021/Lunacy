@@ -10,35 +10,35 @@ namespace Lunacy.PlacedObjects
         {
             RegisterManagedObject(new CustomSlimeMoldPlacedType());
 
-            //ManagedField[] ventFields =
-            //{
-            //    new FloatField("angle", 0f, 360f, 0f, increment: 15f, ManagedFieldWithPanel.ControlType.arrows, displayName: "Push/Pull angle"),
-            //    new FloatField("strength", -10f, 10f, 0f, 0.25f, ManagedFieldWithPanel.ControlType.slider, "Push/Pull strength"),
-            //    new BooleanField("push", true, displayName: "Push physical objects"),
-            //    new FloatField("air", 0f, 1f, 1f, 0.05f, control: ManagedFieldWithPanel.ControlType.slider, displayName: "Air refill strength"),
-            //    new BooleanField("bubbles", true, displayName: "Spawn bubbles"),
-            //    new BooleanField("sound", true, displayName: "Play sound"),
-            //    new FloatField("pitch", 0f, 1f, 1f, 0.05f, control:ManagedFieldWithPanel.ControlType.slider, displayName: "Pitch"),
-            //    new Vector2Field("handle", new Vector2(60f, 60f), Vector2Field.VectorReprType.rect)
-            //};
-            //ManagedField[] circleVentFields =
-            //{
-            //    new FloatField("air", 0f, 1f, 1f, 0.05f, control: ManagedFieldWithPanel.ControlType.slider, displayName: "Air refill strength"),
-            //    new BooleanField("bubbles", true, displayName: "Spawn bubbles"),
-            //    new BooleanField("sound", true, displayName: "Play sound"),
-            //    new FloatField("pitch", 0f, 1f, 1f, 0.05f, control:ManagedFieldWithPanel.ControlType.slider, displayName: "Pitch"),
-            //    new Vector2Field("handle", new Vector2(60f, 60f), Vector2Field.VectorReprType.circle)
-            //};
-            //
-            //RegisterFullyManagedObjectType(ventFields, typeof(AirVentCurrent), "RectVentCurrent", "Lunacy");
-            //RegisterFullyManagedObjectType(circleVentFields, typeof(CircleVent), "CircVent", "Lunacy");
+            ManagedField[] ventFields =
+            {
+                new FloatField("angle", 0f, 360f, 0f, increment: 15f, ManagedFieldWithPanel.ControlType.arrows, displayName: "Bubble push/pull angle"),
+                new FloatField("strength", -10f, 10f, 0f, 0.25f, ManagedFieldWithPanel.ControlType.slider, "Bubble push/pull strength"),
+                new FloatField("air", 0f, 1f, 1f, 0.05f, control: ManagedFieldWithPanel.ControlType.slider, displayName: "Air refill strength"),
+                new BooleanField("bubbles", true, displayName: "Spawn bubbles"),
+                new BooleanField("sound", true, displayName: "Play sound"),
+                new FloatField("pitch", 0f, 1f, 1f, 0.05f, control:ManagedFieldWithPanel.ControlType.slider, displayName: "Pitch"),
+                new FloatField("volume", 0f, 1f, 1f, 0.05f, control:ManagedFieldWithPanel.ControlType.slider, displayName: "Max Volume"),
+                new Vector2Field("handle", new Vector2(60f, 60f), Vector2Field.VectorReprType.rect)
+            };
+            ManagedField[] circleVentFields =
+            {
+                new FloatField("air", 0f, 1f, 1f, 0.05f, control: ManagedFieldWithPanel.ControlType.slider, displayName: "Air refill strength"),
+                new BooleanField("bubbles", true, displayName: "Spawn bubbles"),
+                new BooleanField("sound", true, displayName: "Play sound"),
+                new FloatField("pitch", 0f, 1f, 1f, 0.05f, control:ManagedFieldWithPanel.ControlType.slider, displayName: "Pitch"),
+                new FloatField("volume", 0f, 1f, 1f, 0.05f, control:ManagedFieldWithPanel.ControlType.slider, displayName: "Max Volume"),
+                new Vector2Field("handle", new Vector2(60f, 60f), Vector2Field.VectorReprType.circle)
+            };
+            
+            RegisterFullyManagedObjectType(ventFields, typeof(AirVentCurrent), "RectVentCurrent", "Lunacy");
+            RegisterFullyManagedObjectType(circleVentFields, typeof(CircleVent), "CircVent", "Lunacy");
 
             On.Room.Loaded += NonPomPlacedObjects;
         }
 
         public static void NonPomPlacedObjects(On.Room.orig_Loaded orig, Room room)
         {
-            //bool firstTime = room.abstractRoom.firstTimeRealized;
             orig.Invoke(room);
             if (room.game == null) return;
             if (room.roomSettings != null && room.roomSettings.placedObjects != null && room.roomSettings.placedObjects.Count > 0)
@@ -88,7 +88,6 @@ namespace Lunacy.PlacedObjects
 
             public override UpdatableAndDeletable MakeObject(PlacedObject placedObject, Room room)
             {
-                Plugin.logger.LogMessage($"Mold positions: {placedObject.pos}, {(placedObject.data as ManagedData).GetValue<Vector2>("radius")}");
                 SlimeMold.CosmeticSlimeMold slime = new SlimeMold.CosmeticSlimeMold(room, placedObject.pos, Vector2.Distance(placedObject.pos, placedObject.pos + (placedObject.data as ManagedData).GetValue<Vector2>("radius")), (placedObject.data as ManagedData).GetValue<int>("moldtype") == 2);
                 if (!CustomSlimeMoldHooks.CustomCosmeticSlime.TryGetValue(slime, out _)) CustomSlimeMoldHooks.CustomCosmeticSlime.Add(slime, new System.Runtime.CompilerServices.StrongBox<bool>((placedObject.data as ManagedData).GetValue<bool>("effectA")));
                 return slime;

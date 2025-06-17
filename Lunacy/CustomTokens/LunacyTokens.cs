@@ -396,7 +396,7 @@ namespace Lunacy.CustomTokens
 
                 contents += "&";
             }
-            contents = contents.Substring(0, contents.Length - 1);
+            if (contents.Length > 0) contents = contents.Substring(0, contents.Length - 1);
             if (contents != "" && contents != null) File.WriteAllText(text + "lunacytokencache" + fileName + ".txt", contents);
         }
 
